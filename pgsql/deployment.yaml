@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgsql-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pgsql-server
+      tier: db
+  template:
+    metadata:
+      labels:
+        app: pgsql-server
+        tier: db
+    spec:
+      containers:
+        - image: postgres:9.6.18-alpine
+          name: pgsql-server
+          # args:
+          #   - "--ignore-db-dir=lost+found"
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgsql-pass
+                  key: password
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: pgsql-persistent-storage
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: pgsql-persistent-storage
+          persistentVolumeClaim:
+            claimName: pgsql-persistent-volume-claim
