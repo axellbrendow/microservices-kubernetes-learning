@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-apache-hpa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: php-apache-hpa
+  template: # inside template we will have a pod specification
+    metadata:
+      labels:
+        app: php-apache-hpa
+    spec:
+      containers:
+        - name: php-apache-hpa
+          image: axell13/php-apache-hpa
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "200m"
